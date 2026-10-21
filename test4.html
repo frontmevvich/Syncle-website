@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syncle — автоматизация продаж на маркетплейсах</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+
+:root{
+  --bg:    #000000;
+  --bg1:   #0a0a0f;
+  --bg2:   #12121a;
+  --t0:    #ffffff;
+  --t1:    #ececec;
+  --t2:    #8e8ea0;
+  --t3:    #444455;
+  --b0:    rgba(255,255,255,.07);
+  --b1:    rgba(255,255,255,.12);
+  --b2:    rgba(255,255,255,.20);
+  --blue:  #6b8ef5;
+  --cyan:  #5b7bf2;
+  --accent:#9aaafa;
+}
+
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--t1);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;
+  background:transparent;
+  backdrop-filter:blur(0px);
+  -webkit-backdrop-filter:blur(0px);
+  border-bottom:1px solid transparent;
+  transition:background .4s ease, border-color .4s ease, backdrop-filter .4s ease;
+}
+nav.scrolled{
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;min-width:0;}
+.brand-logo{display:block;width:auto;object-fit:contain;}
+.brand-logo-top{width:132px;max-height:42px;}
+.nav-logo-name{font-size:18px;font-weight:800;letter-spacing:-.05em;color:#fff;}
+.nav-links{display:flex;gap:0;list-style:none;}
+.nav-links a{
+  display:block;padding:6px 14px;border-radius:6px;
+  text-decoration:none;color:rgba(255,255,255,.65);
+  font-size:13.5px;font-weight:400;letter-spacing:-.005em;
+  transition:color .18s,background .18s;
+}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.08);}
+
+/* HERO */
+.hero{
+  min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  padding:108px 40px 80px;
+  position:relative;overflow:hidden;
+  text-align:center;
+  background: #000;
+}
+.hero-vignette{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 55% at 62% 38%, rgba(255,255,255,.55) 0%, transparent 45%),
+    radial-gradient(ellipse 120% 85% at 50% 0%,  rgba(30,90,220,.95)  0%, rgba(37,99,235,.7) 35%, rgba(15,50,160,.4) 60%, transparent 75%),
+    radial-gradient(ellipse 80%  60% at 20% 10%, rgba(40,100,230,.6)  0%, transparent 55%),
+    radial-gradient(ellipse 100% 40% at 50% 100%, rgba(5,10,40,.98) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(20,70,200,.85) 0%, rgba(10,30,100,.5) 55%, rgba(0,0,0,1) 100%);
+}
+.hero-dots{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse 90% 80% at 50% 30%,black,transparent 70%);
+}
+.hero-fade{
+  position:absolute;bottom:0;left:0;right:0;height:280px;
+  background:linear-gradient(to top,#000 0%,rgba(0,0,0,.7) 40%,transparent 100%);
+  pointer-events:none;
+}
+.hero-inner{position:relative;z-index:2;max-width:720px;}
+
+.hero-wordmark{
+  margin-bottom:32px;
+  font-size:clamp(28px,4vw,44px);
+  font-weight:900;
+  letter-spacing:-.06em;
+  color:#fff;
+  line-height:1;
+}
+
+/* Badge */
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:100px;
+  background:rgba(107,142,245,.1);border:1px solid rgba(107,142,245,.22);
+  font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  color:#9aaafa;margin-bottom:22px;
+}
+.hero-badge-dot{width:5px;height:5px;border-radius:50%;background:#6b8ef5;animation:pulseDot 2.5s infinite;}
+
+h1{
+  font-size:clamp(36px,4.8vw,64px);
+  font-weight:700;letter-spacing:-.04em;line-height:1.06;
+  margin-bottom:22px;color:#fff;
+}
+.shimmer-text{
+  background:linear-gradient(
+    90deg,
+    #a8c4ff 0%,
+    #c8d8ff 12%,
+    #ffffff 25%,
+    #c8d8ff 38%,
+    #7aaaf8 50%,
+    #c8d8ff 62%,
+    #ffffff 75%,
+    #c8d8ff 88%,
+    #a8c4ff 100%
+  );
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmer 3.5s linear infinite;
+}
+@keyframes shimmer{
+  0%{background-position:200% center}
+  100%{background-position:0% center}
+}
+
+.hero-sub{
+  font-size:clamp(15px,1.6vw,17px);
+  color:var(--t2);line-height:1.72;
+  max-width:500px;margin:0 auto 44px;
+  font-weight:400;
+}
+.hero-sub b{color:var(--t1);font-weight:500;}
+
+.hero-cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+.btn-w{
+  display:inline-flex;align-items:center;
+  min-width:170px;justify-content:center;
+  height:44px;padding:0 22px;border-radius:8px;
+  box-shadow:0 8px 24px rgba(255,255,255,.18);
+  font-size:13.5px;font-weight:600;letter-spacing:-.01em;
+  text-decoration:none;color:#000000;
+  background:#ffffff;
+  transition:opacity .2s,transform .2s;
+}
+.btn-w:hover{opacity:.88;transform:translateY(-1px);}
+
+.btn-g{
+  display:inline-flex;align-items:center;
+  min-width:170px;justify-content:center;
+  height:44px;padding:0 20px;border-radius:8px;
+  font-size:13.5px;font-weight:600;
+  text-decoration:none;color:rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.08);
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  transition:color .18s,border-color .18s,background .18s;
+}
+.btn-g:hover{color:var(--t1);border-color:var(--b2);background:rgba(255,255,255,.04);}
+
+/* STATS */
+.stats-outer{padding:0 40px 96px;max-width:1120px;margin:0 auto;}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--b0);border-radius:14px;overflow:hidden;
+}
+.sc{
+  padding:36px 28px;border-right:1px solid var(--b0);
+  transition:background .2s;
+}
+.sc:last-child{border-right:none;}
+.sc:hover{background:rgba(255,255,255,.02);}
+.sc-val{
+  font-size:40px;font-weight:700;letter-spacing:-.04em;line-height:1;
+  color:var(--t0);margin-bottom:8px;
+}
+.sc-desc{font-size:12.5px;color:var(--t3);line-height:1.5;}
+
+/* SHARED */
+.wrap{max-width:1120px;margin:0 auto;padding:0 40px;}
+.stag{
+  display:inline-block;
+  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:14px;
+}
+h2{font-size:clamp(28px,3.2vw,44px);font-weight:700;letter-spacing:-.035em;line-height:1.1;margin-bottom:15px;color:var(--t0);}
+.ssub{font-size:15.5px;color:var(--t2);line-height:1.65;max-width:420px;}
+
+.divider{height:1px;background:var(--b0);max-width:1120px;margin:0 auto;}
+
+/* FEATURES SECTION */
+.feat-sec{padding:104px 0;}
+.feat-head{text-align:center;margin-bottom:56px;}
+.feat-head .ssub{margin:0 auto;max-width:480px;}
+
+.feat-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+/* Feature card */
+.fc{
+  border:1px solid var(--b0);
+  border-radius:16px;
+  background:var(--bg1);
+  padding:28px 26px 32px;
+  position:relative;overflow:hidden;
+  transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  cursor:default;
+}
+.fc:hover{
+  transform:translateY(-4px);
+  border-color:var(--b2);
+  box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06);
+}
+.fc::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(107,142,245,.55),rgba(139,154,248,.55),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.fc:hover::before{opacity:1;}
+
+/* Large feature card */
+.fc.wide{grid-column:span 2;}
+
+/* Icon – new style: circle with gradient border */
+.fc-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(91,123,242,.18) 0%,rgba(107,142,245,.06) 100%);
+  border:1px solid rgba(107,142,245,.25);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+  transition:background .25s,border-color .25s;
+  position:relative;
+}
+.fc:hover .fc-icon{
+  background:linear-gradient(135deg,rgba(91,123,242,.28) 0%,rgba(107,142,245,.12) 100%);
+  border-color:rgba(107,142,245,.45);
+}
+.fc-icon svg{width:22px;height:22px;}
+
+.fc-num{font-size:10.5px;font-weight:600;letter-spacing:.1em;color:var(--t3);margin-bottom:14px;display:block;}
+.fc h3{font-size:16px;font-weight:700;letter-spacing:-.022em;margin-bottom:8px;color:var(--t0);}
+.fc p{font-size:13.5px;color:var(--t2);line-height:1.65;}
+
+.fc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:16px;}
+.fc-tag{
+  padding:3px 9px;border-radius:5px;
+  font-size:10px;font-weight:500;color:var(--t3);
+  background:rgba(255,255,255,.04);border:1px solid var(--b0);
+  transition:border-color .2s,color .2s;
+}
+.fc:hover .fc-tag{border-color:var(--b1);color:var(--t2);}
+
+/* Feature interactive demo */
+.fc-demo{
+  margin-top:20px;
+  background:var(--bg2);border:1px solid var(--b0);
+  border-radius:10px;padding:16px;
+  display:flex;gap:14px;align-items:flex-start;
+}
+.fc-demo-left{flex:1;}
+.fc-demo-title{font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:12px;}
+.fc-demo-line{height:5px;border-radius:3px;background:rgba(107,142,245,.2);margin-bottom:6px;position:relative;overflow:hidden;}
+.fc-demo-line::after{
+  content:'';position:absolute;top:0;left:0;height:100%;
+  background:linear-gradient(90deg,#5b7bf2,#6b8ef5);
+  border-radius:3px;
+  animation:lineGrow 2.4s ease-out forwards;
+}
+@keyframes lineGrow{from{width:0}to{width:var(--w,75%)}}
+.fc-demo-line.l1::after{--w:82%;animation-delay:.1s}
+.fc-demo-line.l2::after{--w:65%;animation-delay:.25s}
+.fc-demo-line.l3::after{--w:91%;animation-delay:.4s}
+.fc-demo-right{
+  display:flex;flex-direction:column;gap:7px;min-width:90px;
+}
+.fc-demo-stat{
+  padding:8px 12px;border-radius:7px;
+  background:rgba(107,142,245,.07);border:1px solid rgba(107,142,245,.12);
+  text-align:center;
+}
+.fc-demo-stat-val{font-size:15px;font-weight:700;letter-spacing:-.03em;color:#9aaafa;}
+.fc-demo-stat-lbl{font-size:9.5px;color:var(--t3);margin-top:1px;}
+
+/* Review typing demo */
+.fc-chat{margin-top:20px;display:flex;flex-direction:column;gap:8px;}
+.fc-msg{
+  padding:9px 14px;border-radius:12px;
+  font-size:12px;color:var(--t2);line-height:1.45;
+  max-width:80%;
+}
+.fc-msg.in{
+  background:rgba(255,255,255,.05);border:1px solid var(--b0);
+  border-radius:12px 12px 12px 4px;
+  align-self:flex-start;
+}
+.fc-msg.out{
+  align-self:flex-end;
+  background:rgba(107,142,245,.1);border:1px solid rgba(107,142,245,.18);
+  border-radius:12px 12px 4px 12px;
+  color:var(--t1);
+}
+.fc-typing{
+  align-self:flex-end;
+  display:flex;gap:4px;padding:9px 14px;
+  border-radius:12px 12px 4px 12px;
+  background:rgba(107,142,245,.08);border:1px solid rgba(107,142,245,.12);
+}
+.fc-typing span{
+  width:5px;height:5px;border-radius:50%;background:#6b8ef5;opacity:.4;
+  animation:typDot 1.4s infinite;
+}
+.fc-typing span:nth-child(2){animation-delay:.2s}
+.fc-typing span:nth-child(3){animation-delay:.4s}
+@keyframes typDot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+/* Analytics mini chart inside fc */
+.fc-mini-chart{margin-top:18px;}
+.fc-radar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.fc-radar-item{
+  padding:10px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--b0);
+  text-align:center;
+  transition:border-color .2s;
+}
+.fc:hover .fc-radar-item{border-color:var(--b1);}
+.fc-radar-val{font-size:14px;font-weight:700;letter-spacing:-.03em;color:#9aaafa;margin-bottom:3px;}
+.fc-radar-lbl{font-size:9px;color:var(--t3);line-height:1.3;}
+
+/* Financial roadmap visual */
+.fc-road{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.fc-road-step{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--b0);
+  transition:border-color .2s;
+}
+.fc:hover .fc-road-step{border-color:var(--b1);}
+.fc-road-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.fc-road-text{font-size:12px;color:var(--t2);flex:1;}
+.fc-road-badge{
+  font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;
+  background:rgba(107,142,245,.1);color:#9aaafa;
+  border:1px solid rgba(107,142,245,.15);
+  white-space:nowrap;
+}
+
+/* ===== HOW IT WORKS – CHAT DEMO ===== */
+.how-sec{padding:104px 0;border-top:1px solid var(--b0);}
+.how-head{text-align:center;margin-bottom:60px;}
+.how-head .ssub{margin:0 auto;max-width:480px;}
+
+.chat-demo-wrap{
+  max-width:760px;margin:0 auto;
+  border:1px solid var(--b0);border-radius:20px;
+  background:var(--bg1);overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.6);
+}
+/* Window chrome */
+.chat-chrome{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 18px;
+  border-bottom:1px solid var(--b0);
+  background:var(--bg2);
+}
+.chat-dots{display:flex;gap:6px;}
+.chat-dot{width:11px;height:11px;border-radius:50%;}
+.chat-dot:nth-child(1){background:#ff5f57;}
+.chat-dot:nth-child(2){background:#febc2e;}
+.chat-dot:nth-child(3){background:#28c840;}
+.chat-chrome-title{
+  flex:1;text-align:center;
+  font-size:12px;font-weight:500;color:var(--t3);letter-spacing:.01em;
+}
+.chat-tg-badge{
+  display:flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:100px;
+  background:rgba(38,151,226,.12);border:1px solid rgba(38,151,226,.22);
+  font-size:10.5px;font-weight:600;color:#60b8f0;
+}
+/* Chat body */
+.chat-body{
+  padding:24px 20px;
+  display:flex;flex-direction:column;gap:14px;
+  min-height:440px;
+}
+.chat-bubble{
+  display:flex;gap:10px;align-items:flex-end;
+  animation:bubbleIn .4s ease both;
+}
+@keyframes bubbleIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chat-bubble.user{flex-direction:row-reverse;}
+
+.chat-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;
+}
+.chat-avatar.bot{background:linear-gradient(135deg,#5b7bf2,#9aaafa);color:#fff;}
+.chat-avatar.user{background:rgba(255,255,255,.1);color:var(--t2);font-size:11px;}
+
+.chat-text{
+  padding:10px 14px;border-radius:14px;
+  font-size:13px;line-height:1.55;
+  max-width:75%;
+}
+.chat-bubble.bot .chat-text{
+  background:rgba(255,255,255,.05);border:1px solid var(--b0);
+  border-radius:4px 14px 14px 14px;
+  color:var(--t1);
+}
+.chat-bubble.user .chat-text{
+  background:rgba(91,123,242,.18);border:1px solid rgba(91,123,242,.28);
+  border-radius:14px 4px 14px 14px;
+  color:var(--t1);
+}
+
+/* Inline mini chart inside chat */
+.chat-chart{
+  margin-top:10px;padding:12px;
+  background:var(--bg2);border:1px solid var(--b0);border-radius:10px;
+}
+.chat-chart-title{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px;}
+.chat-bars{display:flex;align-items:flex-end;gap:5px;height:52px;}
+.chat-bar{
+  flex:1;border-radius:3px 3px 0 0;
+  background:linear-gradient(180deg,#6b8ef5,#3a5fd4);
+  transition:height .6s cubic-bezier(.22,.61,.36,1);
+}
+.chat-bar-label{font-size:9px;color:var(--t3);text-align:center;margin-top:4px;}
+.chat-bar-row{display:flex;gap:5px;margin-top:4px;}
+.chat-bar-row span{flex:1;font-size:9px;color:var(--t3);text-align:center;}
+
+/* Mini stat pills inside chat */
+.chat-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.chat-stat-pill{
+  padding:6px 12px;border-radius:8px;
+  background:rgba(107,142,245,.08);border:1px solid rgba(107,142,245,.15);
+  text-align:center;
+}
+.chat-stat-pill .v{font-size:14px;font-weight:700;letter-spacing:-.03em;color:#9aaafa;}
+.chat-stat-pill .l{font-size:9.5px;color:var(--t3);margin-top:1px;}
+
+/* Typing indicator in chat */
+.chat-typing{
+  display:flex;gap:5px;padding:12px 14px;
+  background:rgba(255,255,255,.04);border:1px solid var(--b0);
+  border-radius:4px 14px 14px 14px;
+  width:fit-content;
+}
+.chat-typing span{width:6px;height:6px;border-radius:50%;background:#6b8ef5;opacity:.4;animation:typDot 1.4s infinite;}
+.chat-typing span:nth-child(2){animation-delay:.2s}
+.chat-typing span:nth-child(3){animation-delay:.4s}
+
+/* Input bar */
+.chat-input-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 18px;
+  border-top:1px solid var(--b0);
+  background:var(--bg2);
+}
+.chat-input{
+  flex:1;background:rgba(255,255,255,.04);border:1px solid var(--b0);
+  border-radius:10px;padding:9px 14px;
+  font-size:13px;color:var(--t2);font-family:inherit;
+  outline:none;resize:none;
+  transition:border-color .2s;
+}
+.chat-input:focus{border-color:rgba(107,142,245,.4);color:var(--t1);}
+.chat-send{
+  width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(135deg,#5b7bf2,#9aaafa);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .2s,transform .2s;flex-shrink:0;
+}
+.chat-send:hover{opacity:.85;transform:scale(.95);}
+.chat-send svg{width:16px;height:16px;}
+
+/* Telegram note below chat */
+.tg-note{
+  text-align:center;margin-top:24px;
+  font-size:13px;color:var(--t3);line-height:1.6;
+}
+.tg-note a{color:#60b8f0;text-decoration:none;font-weight:500;}
+.tg-note a:hover{text-decoration:underline;}
+
+/* EFFICIENCY SECTION */
+.eff-sec{
+  padding:104px 0;
+  border-top:1px solid var(--b0);
+  border-bottom:1px solid var(--b0);
+  background:var(--bg1);
+}
+.eff-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;}
+
+.big-ms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:32px;}
+.bm{
+  padding:20px 17px;border-radius:11px;
+  border:1px solid var(--b0);background:var(--bg);
+  transition:.25s;
+}
+.bm:hover{border-color:var(--b1);transform:translateY(-2px);}
+.bm-val{
+  font-size:30px;font-weight:700;letter-spacing:-.04em;line-height:1;
+  color:var(--t0);margin-bottom:6px;
+}
+.bm-label{font-size:12px;color:var(--t3);line-height:1.4;}
+
+/* Metrics chart panel */
+.bc{
+  border:1px solid var(--b0);border-radius:14px;
+  padding:24px 24px 20px;background:var(--bg);
+  position:relative;overflow:hidden;
+}
+.bc::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(107,142,245,.5),rgba(139,154,248,.5),transparent);
+}
+.bc-title{font-size:13.5px;font-weight:600;color:var(--t1);letter-spacing:-.015em;margin-bottom:3px;}
+.bc-sub{font-size:11.5px;color:var(--t3);margin-bottom:22px;}
+
+/* Horizontal metric bars */
+.metric-bars{display:flex;flex-direction:column;gap:14px;margin-top:6px;}
+.mb-row{display:flex;flex-direction:column;gap:5px;}
+.mb-header{display:flex;justify-content:space-between;align-items:baseline;}
+.mb-label{font-size:12px;color:var(--t2);}
+.mb-val{font-size:12px;font-weight:700;color:#9aaafa;letter-spacing:-.02em;}
+.mb-track{height:6px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden;}
+.mb-fill{
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg,#5b7bf2,#9aaafa);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 1.2s cubic-bezier(.22,.61,.36,1);
+}
+.mb-fill.on{transform:scaleX(1);}
+
+/* Chart legend */
+.chart-legend{display:flex;gap:16px;margin-top:16px;}
+.chart-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);}
+.chart-legend-dot{width:8px;height:8px;border-radius:3px;}
+
+/* PLATFORMS */
+.plat-sec{padding:72px 0;}
+.plat-inner{text-align:center;}
+.plat-label{font-size:12px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;font-weight:500;margin-bottom:32px;}
+.plat-logos{
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--b0);border-radius:14px;overflow:hidden;
+  max-width:500px;margin:0 auto;
+}
+.plat-item{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:32px 24px;border-right:1px solid var(--b0);
+  transition:background .2s;
+  min-height:100px;
+}
+.plat-item:last-child{border-right:none;}
+.plat-item:hover{background:rgba(255,255,255,.03);}
+.plat-item img{
+  max-width:130px;width:100%;height:auto;object-fit:contain;
+  filter:brightness(0) invert(1);
+  opacity:.35;
+  transition:opacity .25s;
+}
+.plat-item:hover img{opacity:.6;}
+
+/* PACKAGES */
+.pkg-sec{padding:104px 0;}
+.pkg-intro{text-align:center;margin-bottom:50px;}
+.pkg-intro .ssub{margin:0 auto;}
+
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.pk{
+  padding:26px 22px;border-radius:13px;
+  border:1px solid var(--b0);
+  background:var(--bg1);
+  position:relative;overflow:hidden;transition:.25s;
+}
+.pk:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,.55);border-color:var(--b1);}
+.pk.star{border-color:var(--b1);background:var(--bg2);}
+.pk-topline{
+  position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 8%,rgba(107,142,245,.7) 35%,rgba(139,154,248,.7) 65%,transparent 92%);
+}
+.pk-badge{
+  position:absolute;top:13px;right:13px;
+  padding:2px 8px;border-radius:100px;
+  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--b1);color:var(--t1);
+  border:1px solid var(--b2);
+}
+.pk-name{font-size:19px;font-weight:700;letter-spacing:-.03em;margin-bottom:4px;color:var(--t0);}
+.pk-desc{font-size:12px;color:var(--t3);margin-bottom:20px;line-height:1.5;}
+.pk-price{
+  font-size:28px;font-weight:700;letter-spacing:-.04em;color:var(--t0);margin-bottom:20px;
+  display:flex;align-items:baseline;gap:4px;
+}
+.pk-price-curr{font-size:16px;color:var(--t2);}
+.pk-price-mo{font-size:12px;color:var(--t3);font-weight:400;}
+.pk-list{list-style:none;margin-bottom:24px;}
+.pk-list li{
+  font-size:13px;color:var(--t2);
+  padding:8px 0;border-bottom:1px solid var(--b0);
+  display:flex;align-items:flex-start;gap:8px;line-height:1.4;
+}
+.pk-list li:last-child{border-bottom:none;}
+.ck{color:var(--t2);font-size:11px;flex-shrink:0;margin-top:2px;}
+.pk-btn{
+  display:block;width:100%;text-align:center;
+  padding:10px;border-radius:7px;
+  font-size:13px;font-weight:600;
+  text-decoration:none;transition:.2s;
+}
+.pk-btn-o{border:1px solid var(--b1);color:var(--t2);}
+.pk-btn-o:hover{border-color:var(--b2);color:var(--t1);background:rgba(255,255,255,.04);}
+.pk-btn-w{background:#fff;color:#000000;}
+.pk-btn-w:hover{opacity:.88;}
+
+/* CTA */
+.cta-sec{
+  padding:120px 40px 0;
+  position:relative;overflow:hidden;text-align:center;
+}
+.cta-gradient{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 60% 35%, rgba(255,255,255,.50) 0%, transparent 45%),
+    radial-gradient(ellipse 130% 90% at 50% 10%, rgba(25,85,215,.92) 0%, rgba(35,95,230,.65) 35%, rgba(12,45,155,.35) 62%, transparent 78%),
+    radial-gradient(ellipse 75%  55% at 15%  5%, rgba(35,95,225,.55)  0%, transparent 52%),
+    linear-gradient(180deg, rgba(15,60,190,.80) 0%, rgba(8,25,90,.55) 50%, rgba(0,0,0,1) 100%);
+}
+.cta-inner{position:relative;z-index:1;max-width:540px;margin:0 auto;padding-bottom:72px;}
+.cta-wordmark{
+  margin:0 auto 32px;
+  font-size:20px;font-weight:900;letter-spacing:-.06em;color:#fff;opacity:.8;
+}
+.cta-inner h2{font-size:clamp(32px,4.5vw,52px);letter-spacing:-.04em;margin-bottom:14px;color:var(--t0);}
+.cta-inner p{font-size:16px;color:rgba(255,255,255,.75);margin-bottom:44px;line-height:1.65;}
+.cta-btns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
+
+/* FOOTER */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(255,255,255,.12);
+  padding:26px 40px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:13px;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(10px);
+}
+.fl{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.brand-logo-bottom{width:132px;max-height:38px;opacity:.9;}
+.fl-name{font-size:14px;font-weight:800;letter-spacing:-.05em;color:rgba(255,255,255,.65);}
+footer p{font-size:12px;color:rgba(255,255,255,.4);}
+.fnav{display:flex;gap:20px;list-style:none;}
+.fnav a{font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;transition:color .15s;}
+.fnav a:hover{color:rgba(255,255,255,.85);}
+
+/* CTA buttons on blue gradient bg */
+.cta-btns .btn-g{
+  color:rgba(255,255,255,.8);
+  border-color:rgba(255,255,255,.25);
+  background:rgba(255,255,255,.08);
+}
+.cta-btns .btn-g:hover{
+  color:#fff;
+  border-color:rgba(255,255,255,.45);
+  background:rgba(255,255,255,.15);
+}
+
+/* REVEAL */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.r{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease;}
+.r.on{opacity:1;transform:translateY(0);}
+.r.d1{transition-delay:.08s}.r.d2{transition-delay:.16s}.r.d3{transition-delay:.24s}
+.hero-wordmark,.hero h1,.hero-badge,.hero-sub,.hero-cta{animation:fadeUp .65s ease both;}
+.hero-badge{animation-delay:.05s}
+.hero h1{animation-delay:.1s}.hero-sub{animation-delay:.18s}.hero-cta{animation-delay:.26s}
+
+/* BURGER BUTTON */
+.burger{
+  display:none;
+  flex-direction:column;justify-content:center;align-items:center;
+  width:40px;height:40px;border-radius:8px;
+  background:transparent;border:none;cursor:pointer;
+  gap:5px;padding:0;flex-shrink:0;
+  transition:background .2s;
+}
+.burger:hover{background:rgba(255,255,255,.06);}
+.burger span{
+  display:block;width:20px;height:1.5px;
+  background:var(--t1);border-radius:2px;
+  transition:transform .3s ease,opacity .3s ease,width .3s ease;
+  transform-origin:center;
+}
+.burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.burger.open span:nth-child(2){opacity:0;width:0;}
+.burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+/* MOBILE MENU OVERLAY */
+.mob-menu{
+  display:none;
+  position:fixed;top:64px;left:0;right:0;
+  background:rgba(4,4,12,.96);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  z-index:190;
+  padding:8px 0 16px;
+  transform:translateY(-8px);
+  opacity:0;
+  pointer-events:none;
+  transition:transform .22s ease, opacity .22s ease;
+}
+.mob-menu.open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:all;
+}
+.mob-menu ul{
+  list-style:none;
+  display:flex;flex-direction:column;
+}
+.mob-menu ul li a{
+  display:flex;align-items:center;
+  padding:14px 24px;
+  font-size:15px;font-weight:500;letter-spacing:-.015em;
+  color:rgba(255,255,255,.65);text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  transition:color .15s,background .15s,padding-left .15s;
+}
+.mob-menu ul li:last-child a{border-bottom:none;}
+.mob-menu ul li a:hover{
+  color:#fff;
+  background:rgba(255,255,255,.05);
+  padding-left:32px;
+}
+.mob-menu-cta{padding:12px 24px 0;}
+.mob-menu-cta a{
+  display:flex;align-items:center;justify-content:center;
+  height:42px;border-radius:8px;
+  font-size:13.5px;font-weight:600;
+  text-decoration:none;color:#000;
+  background:#fff;
+  transition:opacity .2s;
+}
+.mob-menu-cta a:hover{opacity:.88;}
+
+/* Pulse dot */
+@keyframes pulseDot{0%,100%{opacity:.8}50%{opacity:.3}}
+
+/* ====== MOBILE ====== */
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .brand-logo-top{width:128px;max-height:40px;}
+  .nav-links{display:none;}
+  .burger{display:flex;}
+  .mob-menu{display:block;}
+
+  .hero{padding:104px 20px 48px;min-height:auto;align-items:center;}
+  .hero-inner{max-width:680px;width:100%;padding-top:0;}
+  .hero-wordmark{margin-bottom:22px;font-size:30px;}
+  .hero-sub{font-size:15px;max-width:340px;margin:0 auto 28px;}
+  .hero-cta{margin-top:0;position:relative;z-index:3;gap:12px;}
+  .stats-outer{padding-top:0;}
+
+  .wrap,.stats-outer{padding-left:20px;padding-right:20px;}
+  .cta-sec{padding:80px 20px 0;}
+  footer{padding:22px 20px;flex-direction:column;align-items:flex-start;gap:14px;}
+
+  .stats-outer{padding-bottom:72px;}
+  .stats-grid{grid-template-columns:1fr 1fr;border-radius:12px;}
+  .sc{border-right:1px solid var(--b0);border-bottom:1px solid var(--b0);padding:22px 16px;}
+  .sc:nth-child(2n){border-right:none;}
+  .sc:nth-child(n+3){border-bottom:1px solid var(--b0);}
+  .sc:last-child{border-bottom:none;}
+  .sc-val{font-size:32px;}
+  .sc-desc{font-size:11.5px;}
+
+  .how-sec,.feat-sec,.eff-sec,.pkg-sec,.plat-sec{padding:72px 0;}
+
+  .feat-grid{grid-template-columns:1fr;}
+  .fc.wide{grid-column:auto;}
+
+  .eff-grid{grid-template-columns:1fr;gap:36px;}
+  .big-ms{grid-template-columns:1fr 1fr;gap:8px;}
+  .bm{padding:16px 14px;}
+  .bm-val{font-size:26px;}
+  .bm-label{font-size:11px;}
+  .bc{padding:20px 16px 16px;}
+
+  .pkg-grid{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto;}
+
+  .cta-btns{flex-direction:column;align-items:center;}
+  .cta-btns a{width:100%;max-width:300px;justify-content:center;height:44px;}
+  .hero-cta{flex-direction:column;align-items:center;}
+  .btn-w,.btn-g{width:100%;max-width:280px;justify-content:center;height:44px;}
+
+  .plat-logos{max-width:100%;}
+  .plat-item{padding:24px 16px;}
+  .plat-item img{max-width:100px;}
+
+  .chat-demo-wrap{border-radius:14px;}
+  .chat-body{min-height:360px;padding:18px 14px;}
+  .chat-text{max-width:88%;}
+  .chat-stats{gap:6px;}
+  .chat-stat-pill .v{font-size:13px;}
+}
+
+@media(max-width:540px){
+  .stats-grid{grid-template-columns:1fr;}
+  .sc{border-right:none !important;border-bottom:1px solid var(--b0) !important;padding:20px 18px;}
+  .sc:last-child{border-bottom:none !important;}
+  .sc-val{font-size:30px;}
+
+  .big-ms{grid-template-columns:1fr 1fr;}
+  .bm-val{font-size:24px;}
+
+  h1{font-size:30px;letter-spacing:-.03em;}
+  h2{font-size:24px;}
+  .hero-sub{font-size:14.5px;}
+  .ssub{font-size:14.5px;}
+
+  .pk{padding:22px 18px;}
+  .pk-name{font-size:17px;}
+
+  .cta-inner h2{font-size:26px;}
+  .cta-inner p{font-size:14.5px;margin-bottom:32px;}
+
+  .fc-demo{flex-direction:column;}
+  .fc-demo-right{flex-direction:row;flex-wrap:wrap;min-width:auto;}
+  .fc-demo-stat{flex:1;}
+
+  .chat-bars{height:40px;}
+  .chat-stats{flex-direction:column;}
+  .chat-stat-pill{display:flex;align-items:center;gap:8px;}
+  .chat-stat-pill .l{margin-top:0;}
+}
+
+@media(max-width:380px){
+  .hero{padding:96px 16px 44px;}
+  .wrap,.stats-outer{padding-left:16px;padding-right:16px;}
+  h1{font-size:26px;}
+  h2{font-size:21px;}
+  .big-ms{grid-template-columns:1fr;}
+  .bm-val{font-size:22px;}
+}
+
+@media(hover:none){
+  .fc:hover{transform:none !important;box-shadow:none !important;}
+  .bm:hover{transform:none !important;}
+  .pk:hover{transform:none !important;box-shadow:none !important;}
+  .btn-w:hover,.btn-g:hover{transform:none !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img class="brand-logo brand-logo-top" src="https://i.ibb.co/pj36KtXz/syncle-full-logo.png" alt="Syncle" loading="eager">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Функции</a></li>
+    <li><a href="#how">Как работает</a></li>
+    <li><a href="#efficiency">Эффективность</a></li>
+    <li><a href="#platforms">Платформы</a></li>
+    <li><a href="#packages">Тарифы</a></li>
+  </ul>
+  <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu" aria-hidden="true">
+  <ul>
+    <li><a href="#features">Функции</a></li>
+    <li><a href="#how">Как работает</a></li>
+    <li><a href="#efficiency">Эффективность</a></li>
+    <li><a href="#platforms">Платформы</a></li>
+    <li><a href="#packages">Тарифы</a></li>
+  </ul>
+  <div class="mob-menu-cta">
+    <a href="https://t.me/synleai_bot">Попробовать бота</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-vignette"></div>
+  <div class="hero-dots"></div>
+  <div class="hero-inner">
+    <h1>Ваши продажи стоят на месте?<br><span class="shimmer-text">Syncle это исправит.</span></h1>
+    <p class="hero-sub">
+      Ваш <b>AI-двигатель для захвата топа мар��етплейсов.</b><br>
+      Контент, репутация и аналитика — всё на автопилоте.
+    </p>
+    <div class="hero-cta">
+      <a href="https://t.me/synleai_bot" class="btn-w">Попробовать бота</a>
+      <a href="https://t.me/syncleproject" class="btn-g">Наш канал</a>
+    </div>
+  </div>
+  <div class="hero-fade"></div>
+</section>
+
+<!-- STATS -->
+<div class="divider"></div>
+<div class="stats-outer r">
+  <div class="stats-grid">
+    <div class="sc">
+      <div class="sc-val" data-target="40" data-suffix="%">0</div>
+      <div class="sc-desc">Рост CTR благодаря AI-инфографике и продающим карточкам</div>
+    </div>
+    <div class="sc">
+      <div class="sc-val" data-target="15" data-suffix=" ч">0</div>
+      <div class="sc-desc">Экономии в неделю на написании ответов и постановке ТЗ</div>
+    </div>
+    <div class="sc">
+      <div class="sc-val" data-target="4" data-suffix=".8+">0</div>
+      <div class="sc-desc">Удержание рейтинга товара за счёт умной работы с отзывами</div>
+    </div>
+    <div class="sc">
+      <div class="sc-val" data-target="15" data-suffix="%">0</div>
+      <div class="sc-desc">Рост конверсии в покупку с точными SEO-описаниями</div>
+    </div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section class="feat-sec" id="features">
+  <div class="wrap">
+    <div class="feat-head r">
+      <div class="stag">Функции</div>
+      <h2>Всё, что нужно<br>для роста продаж</h2>
+      <p class="ssub">Один инструмент автоматизирует работу контент-менеджера, аналитика и специалиста по репутации. Работает 24/7.</p>
+    </div>
+
+    <div class="feat-grid">
+
+      <!-- Card 1: Content -->
+      <div class="fc r">
+        <span class="fc-num">01</span>
+        <div class="fc-icon">
+          <!-- Sparkle / magic wand icon -->
+          <svg viewBox="0 0 22 22" fill="none">
+            <path d="M9 3L10.5 7.5L15 9L10.5 10.5L9 15L7.5 10.5L3 9L7.5 7.5L9 3Z" stroke="#9aaafa" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M17 13L17.8 15.2L20 16L17.8 16.8L17 19L16.2 16.8L14 16L16.2 15.2L17 13Z" stroke="#9aaafa" stroke-width="1.2" stroke-linejoin="round" opacity=".7"/>
+          </svg>
+        </div>
+        <h3>Контент под ключ</h3>
+        <p>Генерирует продающие карточки товаров за несколько минут — с возможностью доработки и изменений. SEO-оптимизированные заголовки, описания и инфографика без участия дизайнера.</p>
+        <div class="fc-demo">
+          <div class="fc-demo-left">
+            <div class="fc-demo-title">Качество карточки</div>
+            <div class="mb-row" style="margin-bottom:0;">
+              <div class="mb-header"><span class="mb-label" style="font-size:11px;">Заголовок</span><span class="mb-val" style="font-size:11px;">94%</span></div>
+              <div class="mb-track"><div class="mb-fill" style="width:94%;transform:scaleX(0);transition:transform 1.4s .2s cubic-bezier(.22,.61,.36,1);" data-bar></div></div>
+            </div>
+            <div class="mb-row" style="margin-top:7px;margin-bottom:0;">
+              <div class="mb-header"><span class="mb-label" style="font-size:11px;">SEO-описание</span><span class="mb-val" style="font-size:11px;">88%</span></div>
+              <div class="mb-track"><div class="mb-fill" style="width:88%;transform:scaleX(0);transition:transform 1.4s .35s cubic-bezier(.22,.61,.36,1);" data-bar></div></div>
+            </div>
+            <div class="mb-row" style="margin-top:7px;margin-bottom:0;">
+              <div class="mb-header"><span class="mb-label" style="font-size:11px;">Инфографика</span><span class="mb-val" style="font-size:11px;">97%</span></div>
+              <div class="mb-track"><div class="mb-fill" style="width:97%;transform:scaleX(0);transition:transform 1.4s .5s cubic-bezier(.22,.61,.36,1);" data-bar></div></div>
+            </div>
+          </div>
+          <div class="fc-demo-right">
+            <div class="fc-demo-stat">
+              <div class="fc-demo-stat-val">3 мин</div>
+              <div class="fc-demo-stat-lbl">Время генерации</div>
+            </div>
+            <div class="fc-demo-stat">
+              <div class="fc-demo-stat-val">+40%</div>
+              <div class="fc-demo-stat-lbl">CTR после улучшения</div>
+            </div>
+          </div>
+        </div>
+        <div class="fc-tags">
+          <span class="fc-tag">AI-генерация</span>
+          <span class="fc-tag">SEO</span>
+          <span class="fc-tag">Инфографика</span>
+          <span class="fc-tag">Wildberries</span>
+          <span class="fc-tag">Ozon</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Reviews -->
+      <div class="fc r d1">
+        <span class="fc-num">02</span>
+        <div class="fc-icon">
+          <!-- Shield / reputation icon -->
+          <svg viewBox="0 0 22 22" fill="none">
+            <path d="M11 2.5L19 6V11C19 15.4 15.5 19.1 11 20.5C6.5 19.1 3 15.4 3 11V6L11 2.5Z" stroke="#9aaafa" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M7.5 11L9.5 13L14.5 9" stroke="#9aaafa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Отзывы и репутация</h3>
+        <p>Автоматизирует работу с отзывами без потери качества. Анализирует оценку, понимает в чём проблема и где можно улучшить продукт — выдаёт точные ответы мгновенно.</p>
+        <div class="fc-chat">
+          <div class="fc-msg in">Товар пришёл без инструкции. Упаковка помята &#x1F615;</div>
+          <div class="fc-msg out">Добрый день! Приносим извинения — это недопустимо. Уже направили вам решение и бонус 200 баллов. Спасибо за честный отзыв!</div>
+          <div class="fc-typing"><span></span><span></span><span></span></div>
+        </div>
+        <div class="fc-tags">
+          <span class="fc-tag">Автоответы</span>
+          <span class="fc-tag">Анализ тональности</span>
+          <span class="fc-tag">Рейтинг 4.8+</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Analytics (wide) -->
+      <div class="fc wide r d2">
+        <span class="fc-num">03</span>
+        <div class="fc-icon">
+          <!-- Telescope / search trend icon -->
+          <svg viewBox="0 0 22 22" fill="none">
+            <circle cx="9" cy="9" r="5.5" stroke="#9aaafa" stroke-width="1.4"/>
+            <path d="M13.5 13.5L19 19" stroke="#9aaafa" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M7 9h4M9 7v4" stroke="#9aaafa" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
+          </svg>
+        </div>
+        <h3>Аналитика конкурентов</h3>
+        <p>Проводит глубокий ауди�� конкурентов и подсвечивает точки роста вашего продукта. Сравнивает карточки, цены, отзывы и позиции — данные вместо догадок.</p>
+        <div class="fc-demo" style="margin-top:20px;">
+          <div class="fc-demo-left">
+            <div class="fc-demo-title">Позиция в поиске</div>
+            <div class="mb-row" style="margin-bottom:0;">
+              <div class="mb-header"><span class="mb-label" style="font-size:11px;">Ваш товар</span><span class="mb-val" style="font-size:11px;">Топ-8</span></div>
+              <div class="mb-track"><div class="mb-fill" style="width:78%;transform:scaleX(0);transition:transform 1.4s .15s cubic-bezier(.22,.61,.36,1);" data-bar></div></div>
+            </div>
+            <div class="mb-row" style="margin-top:7px;margin-bottom:0;">
+              <div class="mb-header"><span class="mb-label" style="font-size:11px;">Конкурент A</span><span class="mb-val" style="font-size:11px;">Топ-3</span></div>
+              <div class="mb-track"><div class="mb-fill" style="width:95%;transform:scaleX(0);transition:transform 1.4s .3s cubic-bezier(.22,.61,.36,1);" data-bar></div></div>
+            </div>
+            <div class="mb-row" style="margin-top:7px;margin-bottom:0;">
+              <div class="mb-header"><span class="mb-label" style="font-size:11px;">Конкурент B</span><span class="mb-val" style="font-size:11px;">Топ-15</span></div>
+              <div class="mb-track"><div class="mb-fill" style="width:55%;transform:scaleX(0);transition:transform 1.4s .45s cubic-bezier(.22,.61,.36,1);" data-bar></div></div>
+            </div>
+          </div>
+          <div class="fc-demo-right" style="min-width:100px;">
+            <div class="fc-demo-stat">
+              <div class="fc-demo-stat-val">+5</div>
+              <div class="fc-demo-stat-lbl">Позиций вверх</div>
+            </div>
+            <div class="fc-demo-stat">
+              <div class="fc-demo-stat-val">&#215;3</div>
+              <div class="fc-demo-stat-lbl">Быстрее анализа</div>
+            </div>
+          </div>
+        </div>
+        <div class="fc-tags" style="margin-top:16px;">
+          <span class="fc-tag">Аудит конкурентов</span>
+          <span class="fc-tag">SEO-позиции</span>
+          <span class="fc-tag">Сравнение цен</span>
+          <span class="fc-tag">Точки роста</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Financial -->
+      <div class="fc r">
+        <span class="fc-num">04</span>
+        <div class="fc-icon">
+          <!-- Coin / ROI icon -->
+          <svg viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="11" r="8.5" stroke="#9aaafa" stroke-width="1.4"/>
+            <path d="M11 6.5v1.2m0 6.6V15.5M8.5 9.5c0-.83.67-1.5 1.5-1.5h2c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-2c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h2c.83 0 1.5-.67 1.5-1.5" stroke="#9aaafa" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Финансовая аналитика</h3>
+        <p>Выдаёт лучший роадмап решений под ваш бюджет. Показывает, куда вложить рубль, чтобы получить максимальный ROI — без лишних трат.</p>
+        <div class="fc-road">
+          <div class="fc-road-step">
+            <div class="fc-road-dot" style="background:#6b8ef5;"></div>
+            <span class="fc-road-text">Обновить главное фото карточки</span>
+            <span class="fc-road-badge">Приоритет 1</span>
+          </div>
+          <div class="fc-road-step">
+            <div class="fc-road-dot" style="background:#8b9af8;"></div>
+            <span class="fc-road-text">Подключить self-выкупы</span>
+            <span class="fc-road-badge">ROI 3.2x</span>
+          </div>
+          <div class="fc-road-step">
+            <div class="fc-road-dot" style="background:var(--t3);"></div>
+            <span class="fc-road-text">Оптимизировать рекламную ставку</span>
+            <span class="fc-road-badge">-18% затрат</span>
+          </div>
+        </div>
+        <div class="fc-tags">
+          <span class="fc-tag">ROI-аналитика</span>
+          <span class="fc-tag">Бюджет</span>
+          <span class="fc-tag">Роадмап</span>
+        </div>
+      </div>
+
+      <!-- Card 5: Smart Pricing -->
+      <div class="fc r d1">
+        <span class="fc-num">05</span>
+        <div class="fc-icon">
+          <!-- Lightning / dynamic pricing icon -->
+          <svg viewBox="0 0 22 22" fill="none">
+            <path d="M13 2.5L5.5 12.5H11L9 20.5L17.5 9.5H12L13 2.5Z" stroke="#9aaafa" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Юридический сканер угроз</h3>
+        <p>Селлер загружает свою номенклатуру — список товаров. Бот сверяет её с закрытой базой свежих оферт WB и законов РФ: штрафами, требованиями маркировки и системой «Честный знак».</p>
+        <div class="fc-radar">
+          <div class="fc-radar-item">
+            <div class="fc-radar-val">+12%</div>
+            <div class="fc-radar-lbl">Средняя маржа</div>
+          </div>
+          <div class="fc-radar-item">
+            <div class="fc-radar-val">24/7</div>
+            <div class="fc-radar-lbl">Мониторинг цен</div>
+          </div>
+          <div class="fc-radar-item">
+            <div class="fc-radar-val">&#8804;5 мин</div>
+            <div class="fc-radar-lbl">Реакция</div>
+          </div>
+        </div>
+        <div class="fc-tags">
+          <span class="fc-tag">Репрайсинг</span>
+          <span class="fc-tag">Мониторинг</span>
+          <span class="fc-tag">Маржа</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="how-sec" id="how">
+  <div class="wrap">
+    <div class="how-head r">
+      <div class="stag">Как это работает?</div>
+      <h2>Просто напиши в Telegram-бот</h2>
+      <p class="ssub">Никаких дашбордов, регистраций и настроек. Задаёшь вопрос — получаешь готовый ответ с данными, диаграммами и рекомендациями прямо в чате.</p>
+    </div>
+
+    <div class="chat-demo-wrap r d1">
+      <!-- Chrome -->
+      <div class="chat-chrome">
+        <div class="chat-dots">
+          <div class="chat-dot"></div>
+          <div class="chat-dot"></div>
+          <div class="chat-dot"></div>
+        </div>
+        <div class="chat-chrome-title">Syncle AI Bot</div>
+        <div class="chat-tg-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.94 8.19l-2.01 9.47c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.39c-.16.16-.29.29-.6.29l.21-3.05 5.5-4.97c.24-.21-.05-.33-.37-.12L6.39 14.5l-2.93-.92c-.64-.2-.65-.64.13-.95l11.43-4.4c.53-.19 1 .13.92.96z" fill="#60b8f0"/></svg>
+          Telegram
+        </div>
+      </div>
+
+      <!-- Chat body -->
+      <div class="chat-body" id="chatDemo">
+
+        <div class="chat-bubble bot" style="animation-delay:.1s">
+          <div class="chat-avatar bot">S</div>
+          <div class="chat-text">
+            Привет! Я Syncle AI. Спроси меня про аналитику, конкурентов, отзывы или контент для твоих товаров.
+          </div>
+        </div>
+
+        <div class="chat-bubble user" style="animation-delay:.5s">
+          <div class="chat-avatar user">Вы</div>
+          <div class="chat-text">Покажи анализ конкурентов по запросу «беспроводные наушники»</div>
+        </div>
+
+        <div class="chat-bubble bot" style="animation-delay:1s">
+          <div class="chat-avatar bot">S</div>
+          <div class="chat-text">
+            Анализирую топ-20 карточек по запросу <strong>«беспроводные наушники»</strong>... Вот ключевые данные:
+            <div class="chat-chart">
+              <div class="chat-chart-title">Средний CTR по позициям</div>
+              <div class="chat-bars" id="chatBars">
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+                  <div class="chat-bar" style="height:0;" data-h="72%" id="cb1"></div>
+                  <div class="chat-bar-label">Топ-1</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+                  <div class="chat-bar" style="height:0;" data-h="58%" id="cb2"></div>
+                  <div class="chat-bar-label">Топ-5</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+                  <div class="chat-bar" style="height:0;" data-h="38%" id="cb3"></div>
+                  <div class="chat-bar-label">Топ-10</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+                  <div class="chat-bar" style="height:0;" data-h="24%" id="cb4"></div>
+                  <div class="chat-bar-label">Топ-20</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1;opacity:.5;">
+                  <div class="chat-bar" style="height:0;background:rgba(107,142,245,.3);" data-h="12%" id="cb5"></div>
+                  <div class="chat-bar-label">Вы</div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-stats">
+              <div class="chat-stat-pill"><div class="v">+9</div><div class="l">позиций роста</div></div>
+              <div class="chat-stat-pill"><div class="v">×3.1</div><div class="l">разрыв с топом</div></div>
+              <div class="chat-stat-pill"><div class="v">4</div><div class="l">точки роста</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-bubble user" style="animation-delay:1.5s">
+          <div class="chat-avatar user">Вы</div>
+          <div class="chat-text">Что мне нужно сделать чтобы попасть в топ-5?</div>
+        </div>
+
+        <div class="chat-bubble bot" style="animation-delay:2s">
+          <div class="chat-avatar bot">S</div>
+          <div class="chat-text">
+            Вот приоритетный план действий для выхода в топ-5 по данному запросу:<br><br>
+            <strong>1.</strong> Переписать заголовок с ключом — у топовых карточек в нём 6–8 слов<br>
+            <strong>2.</strong> Добавить инфографику с характеристиками — конверсия растёт на 28%<br>
+            <strong>3.</strong> Ответить на 3 незакрытых негативных отзыва — тянут рейтинг вниз<br>
+            <strong>4.</strong> Скорректировать цену: оптимальная точка — <strong>3 490 &#8381;</strong>
+          </div>
+        </div>
+
+        <div class="chat-bubble bot" style="animation-delay:2.4s">
+          <div class="chat-avatar bot">S</div>
+          <div class="chat-typing"><span></span><span></span><span></span></div>
+        </div>
+
+      </div>
+
+      <!-- Input bar -->
+      <div class="chat-input-bar">
+        <textarea class="chat-input" id="chatInput" placeholder="Напиши вопрос про твои товары..." rows="1"></textarea>
+        <button class="chat-send" id="chatSend" aria-label="Отправить">
+          <svg viewBox="0 0 16 16" fill="none">
+            <path d="M14 8L2 2l3 6-3 6 12-6z" fill="white"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <p class="tg-note r d2">
+      Всё это — прямо в <a href="https://t.me/synleai_bot">Telegram-боте Syncle</a>. Никаких регистраций, удобно с телефона, ответ за секунды.
+    </p>
+  </div>
+</section>
+
+<!-- EFFICIENCY -->
+<section class="eff-sec" id="efficiency">
+  <div class="wrap">
+    <div class="eff-grid">
+      <div class="r">
+        <div class="stag">Эффективность</div>
+        <h2>Замена целого штата<br>одним инструментом</h2>
+        <p class="ssub">Пока селлеры тратят десятки часов и сотни тысяч рублей на контент-менеджеров, дизайнеров и аналитиков — Syncle делает это за минуты.</p>
+        <div class="big-ms">
+          <div class="bm"><div class="bm-val">-70%</div><div class="bm-label">экономия бюджета на операционку</div></div>
+          <div class="bm"><div class="bm-val">+40%</div><div class="bm-label">рост кликабельности карточек</div></div>
+          <div class="bm"><div class="bm-val">15 ч</div><div class="bm-label">экономии в неделю на рутину</div></div>
+          <div class="bm"><div class="bm-val">&#215;4</div><div class="bm-label">скорость создания контента</div></div>
+        </div>
+      </div>
+
+      <div class="bc r d2" id="effChart">
+        <div class="bc-title">Прогнозируемые метрики</div>
+        <div class="bc-sub">Рост показателей после подключения Syncle</div>
+        <div class="metric-bars" id="metricBars">
+          <div class="mb-row">
+            <div class="mb-header"><span class="mb-label">CTR (Кликабельность)</span><span class="mb-val">+25–40%</span></div>
+            <div class="mb-track"><div class="mb-fill" style="width:82%;" data-animated></div></div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-header"><span class="mb-label">Конверсия в покупку (CR)</span><span class="mb-val">+15%</span></div>
+            <div class="mb-track"><div class="mb-fill" style="width:60%;" data-animated></div></div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-header"><span class="mb-label">Рейтинг товара</span><span class="mb-val">4.8+</span></div>
+            <div class="mb-track"><div class="mb-fill" style="width:96%;" data-animated></div></div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-header"><span class="mb-label">Экономия времени</span><span class="mb-val">15 ч/нед</span></div>
+            <div class="mb-track"><div class="mb-fill" style="width:75%;" data-animated></div></div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-header"><span class="mb-label">Экономия бюджета</span><span class="mb-val">до 100К&#8381;/мес</span></div>
+            <div class="mb-track"><div class="mb-fill" style="width:90%;" data-animated></div></div>
+          </div>
+        </div>
+        <div class="chart-legend" style="margin-top:20px;">
+          <div class="chart-legend-item">
+            <div class="chart-legend-dot" style="background:linear-gradient(90deg,#5b7bf2,#9aaafa)"></div>После Syncle
+          </div>
+          <div class="chart-legend-item">
+            <div class="chart-legend-dot" style="background:rgba(255,255,255,.08)"></div>До Syncle
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORMS -->
+<section class="plat-sec" id="platforms">
+  <div class="wrap">
+    <div class="plat-inner r">
+      <div class="plat-label">Работает на платформах</div>
+      <div class="plat-logos">
+        <div class="plat-item">
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wildberries-horizontal-logo-YXZ4dlzDQ3XICPQEbwmEnlIkhHSDtw.png"
+            alt="Wildberries"
+          >
+        </div>
+        <div class="plat-item">
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/%D0%9E%D0%97%D0%9E%D0%9D_%D0%9B%D0%9E%D0%93%D0%9E-0Pv4PHvuUOd2y2F3aLBbMZIkQn2ewb.png"
+            alt="OZON"
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PACKAGES -->
+<section class="pkg-sec" id="packages">
+  <div class="wrap">
+    <div class="pkg-intro r">
+      <div class="stag">Тарифы</div>
+      <h2>Выберите свой план</h2>
+      <p class="ssub">Гибкие подписки для любого масштаба — от начинающего до крупного селлера. Не знаете что подходит — просто напишите.</p>
+    </div>
+    <div class="pkg-grid">
+
+      <div class="pk r">
+        <div class="pk-name">JUNIOR</div>
+        <div class="pk-desc">Быстрый старт без ошибок</div>
+        <ul class="pk-list">
+          <li><span class="ck">&#10003;</span>Для тех, кто только выходит на маркетплейсы или ведёт небольшой магазин</li>
+          <li><span class="ck">&#10003;</span>Готовые карточки товаров с инфографикой</li>
+          <li><span class="ck">&#10003;</span>Ответы на отзывы одним кликом</li>
+          <li><span class="ck">&#10003;</span>Экспресс-анализ конкурентов</li>
+          <li><span class="ck">&#10003;</span>Калькулятор прибыльности</li>
+        </ul>
+        <a href="https://t.me/syncleproject" class="pk-btn pk-btn-o">Подключить</a>
+      </div>
+
+      <div class="pk star r d1">
+        <div class="pk-topline"></div>
+        <div class="pk-badge">Популярный</div>
+        <div class="pk-name">MIDDLE</div>
+        <div class="pk-desc">Рост оборота</div>
+        <ul class="pk-list">
+          <li><span class="ck">&#10003;</span>Для селлеров, которые уже продают и хотят расти быстрее</li>
+          <li><span class="ck">&#10003;</span>Расширенный объём карточек и продвинутая инфографика</li>
+          <li><span class="ck">&#10003;</span>Полная автоматизация работы с отзывами</li>
+          <li><span class="ck">&#10003;</span>Глубокий аудит конкурентов и скрытые точки роста</li>
+          <li><span class="ck">&#10003;</span>AI-роадмап решений под ваш бюджет</li>
+          <li><span class="ck">&#10003;</span>Юридический сканер товаров</li>
+        </ul>
+        <a href="https://t.me/syncleproject" class="pk-btn pk-btn-w">Подключить</a>
+      </div>
+
+      <div class="pk r d2">
+        <div class="pk-name">SENIOR</div>
+        <div class="pk-desc">Масштаб и доминирование</div>
+        <ul class="pk-list">
+          <li><span class="ck">&#10003;</span>Для крупных селлеров, брендов и агентств</li>
+          <li><span class="ck">&#10003;</span>Максимальный объём контента для больших каталогов</li>
+          <li><span class="ck">&#10003;</span>Управление репутацией бренда</li>
+          <li><span class="ck">&#10003;</span>Предиктивный мониторинг рынка</li>
+          <li><span class="ck">&#10003;</span>Прогноз окупаемости на полгода вперёд</li>
+          <li><span class="ck">&#10003;</span>Расширенный аудит и юридическая проверка</li>
+        </ul>
+        <a href="https://t.me/syncleproject" class="pk-btn pk-btn-o">Подключить</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA + FOOTER -->
+<div style="position:relative;overflow:hidden;">
+  <div class="cta-gradient"></div>
+  <section class="cta-sec">
+    <div class="cta-inner r">
+      <h2>Готовы захватить<br>топ маркетплейсов?</h2>
+      <p>Попробуйте Syncle бесплатно. Первые результаты — уже в первый день.</p>
+      <div class="cta-btns">
+        <a href="https://t.me/synleai_bot" class="btn-w" style="height:42px;font-size:14px;padding:0 26px;">Наш бот</a>
+        <a href="https://t.me/syncleproject" class="btn-g" style="height:42px;font-size:14px;padding:0 22px;">Telegram-канал</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <a href="#" class="fl">
+      <img class="brand-logo brand-logo-bottom" src="https://i.ibb.co/pj36KtXz/syncle-full-logo.png" alt="Syncle" loading="lazy">
+    </a>
+    <p>&#169; 2025 Syncle. Автоматизация и ускорение продаж на маркетплейсах.</p>
+    <ul class="fnav">
+      <li><a href="https://t.me/syncleproject">Канал</a></li>
+      <li><a href="https://t.me/synleai_bot">Бот</a></li>
+    </ul>
+  </footer>
+</div>
+
+<script>
+/* Intersection reveal */
+const obs = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); }
+}), { threshold: .1 });
+document.querySelectorAll('.r').forEach(el => obs.observe(el));
+
+/* Counter animation */
+function cnt(el) {
+  const t = parseFloat(el.dataset.target), s = el.dataset.suffix || '';
+  let c = 0; const inc = t / (1400 / 16);
+  const ti = setInterval(() => {
+    c += inc; if (c >= t) { c = t; clearInterval(ti); }
+    el.textContent = (Number.isInteger(t) ? Math.floor(c) : c.toFixed(1)) + s;
+  }, 16);
+}
+const co = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.querySelectorAll('[data-target]').forEach(cnt); co.unobserve(e.target); }
+}), { threshold: .4 });
+document.querySelectorAll('.stats-outer').forEach(el => co.observe(el));
+
+/* Animated metric bars */
+const barObs = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) {
+    e.target.querySelectorAll('[data-animated]').forEach(bar => bar.classList.add('on'));
+    e.target.querySelectorAll('[data-bar]').forEach(bar => { bar.style.transform = 'scaleX(1)'; });
+    barObs.unobserve(e.target);
+  }
+}), { threshold: .25 });
+document.querySelectorAll('#effChart, #metricBars').forEach(el => barObs.observe(el));
+
+const fcObs = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) {
+    e.target.querySelectorAll('[data-bar]').forEach(bar => { bar.style.transform = 'scaleX(1)'; });
+    fcObs.unobserve(e.target);
+  }
+}), { threshold: .3 });
+document.querySelectorAll('.fc').forEach(el => fcObs.observe(el));
+
+/* Chat bar animation on scroll */
+const chatObs = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) {
+    setTimeout(() => {
+      const bars = ['cb1','cb2','cb3','cb4','cb5'];
+      const heights = ['72%','58%','38%','24%','12%'];
+      bars.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) {
+          setTimeout(() => { el.style.height = heights[i]; el.style.transition = 'height .6s cubic-bezier(.22,.61,.36,1)'; }, i * 80);
+        }
+      });
+    }, 600);
+    chatObs.unobserve(e.target);
+  }
+}), { threshold: .2 });
+const chatDemo = document.getElementById('chatDemo');
+if (chatDemo) chatObs.observe(chatDemo);
+
+/* Chat input interaction */
+const chatInput = document.getElementById('chatInput');
+const chatSend  = document.getElementById('chatSend');
+
+const demoReplies = [
+  'Анализирую данные... Ваш товар имеет потенциал роста в категории. Рекомендую обновить главное фото и добавить ключевые слова в заголовок.',
+  'По данным платформы, оптимальная цена для вашей категории — на 8% ниже текущей. Это повысит конверсию на ~15%.',
+  'Выявлено 3 негативных отзыва без ответа. Вот готовые тексты для каждого из них — нажмите чтобы скопировать.',
+  'Сгенерировал SEO-описание для вашего товара. Уникальность 98%, включены топ-12 ключевых запросов по нише.'
+];
+let replyIdx = 0;
+
+function sendChatMsg() {
+  const val = chatInput.value.trim();
+  if (!val) return;
+
+  const body = document.getElementById('chatDemo');
+
+  /* User message */
+  const userBubble = document.createElement('div');
+  userBubble.className = 'chat-bubble user';
+  userBubble.innerHTML = '<div class="chat-avatar user">Вы</div><div class="chat-text">' + val.replace(/</g,'&lt;') + '</div>';
+  body.appendChild(userBubble);
+
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  body.scrollTop = body.scrollHeight;
+
+  /* Typing indicator */
+  const typBubble = document.createElement('div');
+  typBubble.className = 'chat-bubble bot';
+  typBubble.innerHTML = '<div class="chat-avatar bot">S</div><div class="chat-typing"><span></span><span></span><span></span></div>';
+  body.appendChild(typBubble);
+  body.scrollTop = body.scrollHeight;
+
+  /* Bot reply after delay */
+  setTimeout(() => {
+    typBubble.remove();
+    const botBubble = document.createElement('div');
+    botBubble.className = 'chat-bubble bot';
+    const reply = demoReplies[replyIdx % demoReplies.length];
+    replyIdx++;
+    botBubble.innerHTML = '<div class="chat-avatar bot">S</div><div class="chat-text">' + reply + '</div>';
+    body.appendChild(botBubble);
+    body.scrollTop = body.scrollHeight;
+  }, 1400);
+}
+
+if (chatSend) chatSend.addEventListener('click', sendChatMsg);
+if (chatInput) {
+  chatInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
+  });
+  chatInput.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
+}
+
+/* NAV scroll state */
+const navEl = document.getElementById('nav');
+let ticking = false;
+function updateNav() {
+  if (window.scrollY > 60) navEl.classList.add('scrolled');
+  else navEl.classList.remove('scrolled');
+  ticking = false;
+}
+window.addEventListener('scroll', () => {
+  if (!ticking) { requestAnimationFrame(updateNav); ticking = true; }
+}, { passive: true });
+updateNav();
+
+/* BURGER MENU */
+const burger  = document.getElementById('burger');
+const mobMenu = document.getElementById('mobMenu');
+let menuOpen = false;
+
+function openMenu() {
+  menuOpen = true;
+  burger.classList.add('open');
+  mobMenu.classList.add('open');
+  burger.setAttribute('aria-expanded', 'true');
+  mobMenu.setAttribute('aria-hidden', 'false');
+  if (window.innerWidth <= 900) document.body.style.overflow = 'hidden';
+}
+function closeMenu() {
+  menuOpen = false;
+  burger.classList.remove('open');
+  mobMenu.classList.remove('open');
+  burger.setAttribute('aria-expanded', 'false');
+  mobMenu.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+burger.addEventListener('click', e => { e.stopPropagation(); menuOpen ? closeMenu() : openMenu(); });
+mobMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+document.addEventListener('click', e => {
+  if (menuOpen && !navEl.contains(e.target) && !mobMenu.contains(e.target)) closeMenu();
+});
+window.addEventListener('resize', () => { if (window.innerWidth > 900 && menuOpen) closeMenu(); }, { passive: true });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) closeMenu(); });
+</script>
+</body>
+</html>
